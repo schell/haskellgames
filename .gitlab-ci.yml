@@ -1,0 +1,61 @@
+image: ubuntu:18.04
+cache:
+  paths:
+  - .stack/
+  - .stack-work/
+
+build:
+  stage: build
+  script:
+  - bash scripts/build.sh
+  artifacts:
+    paths:
+    - build.tar.gz
+
+deploy_review:
+  stage: deploy
+  dependencies:
+  - build
+  environment:
+    name: $CI_COMMIT_REF_NAME
+    url: https://$CI_COMMIT_REF_NAME.srcoftruth.com
+    on_stop: stop_review
+  only:
+  - /^deploy-.*$/
+  except:
+  - deploy-production
+  script:
+  - source scripts/ci.sh
+  - deploy $CI_COMMIT_REF_NAME
+
+stop_review:
+  stage: deploy
+  dependencies:
+  - build
+  variables:
+    GIT_STRATEGY: none
+  environment:
+    name: $CI_COMMIT_REF_NAME
+    action: stop
+  only:
+  - /^deploy-.*$/
+  when: manual
+  script:
+  - tar -xf scripts.tar.gz
+  - tar -xf terraform.tar.gz
+  - source scripts/ci.sh
+  - teardown $CI_COMMIT_REF_NAME
+
+deploy_production:
+  stage: deploy
+  dependencies:
+  - build
+  environment:
+    name: production
+    url: https://srcoftruth.com
+  when: manual
+  only:
+  - master
+  script:
+  - source scripts/ci.sh
+  - deploy master

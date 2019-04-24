@@ -1,0 +1,15 @@
+.ghci
+.ghcid
+.stack-work
+.DS_Store
+.#*
+*.pem
+*.cabal
+creds.aws
+cfg.yml
+staging.yml
+build/
+TAGS
+dist-newstyle/
+*.tfvars
+*.terraform

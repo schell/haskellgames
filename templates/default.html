@@ -1,0 +1,94 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>$title$</title>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="http://cdn.jsdelivr.net/font-hack/2.010/css/hack.min.css" rel="stylesheet">
+    <link href="/css/site.css" rel="stylesheet">
+  </head>
+  <body>
+      <main role="main">
+          <div class="container">
+              <div class="row">
+                  <div class="col-md-auto">
+                      <h1>
+$if(articleTitle)$
+$articleTitle$
+$else$
+Haskell Games
+$endif$
+
+$if(author)$
+                          <small class="text-muted" >
+                              by
+$if(authorLink)$
+                              <a href="$authorLink$" rel="author" >$author$</a>
+$else$
+                              <span>$author$</span>
+$endif$
+                          </small>
+$endif$
+                      </h1>
+                  </div>
+              </div>
+              <div class="row" >
+                  <div class="col-sm-auto" >
+                      <a href="/" >about</a>
+                  </div>
+                  <div class="col-sm-auto" >
+                      <a href="/games">games</a>
+                  </div>
+                  <div class="col-sm-auto" >
+                      <a href="https://github.com/schell/haskell-games">contributing</a>
+                  </div>
+                  <div class="col" ></div>
+$if(repo)$
+                  <div class="col-sm-auto" ><a href="$repo$" >original source</a></div>
+$endif$
+$if(comments)$
+                  <div class="col-sm-auto" ><a href="$comments$" >comments</a></div>
+$endif$
+              </div>
+              <div class="row border-top">
+                  <div class="col mt-3">
+$if(toc-title)$
+$toc-title$
+$toc$
+$else$
+$if(has-toc)$
+$toc$
+$endif$
+$endif$
+
+$body$
+                 </div>
+              </div>
+              <div class="row  border-bottom" >
+$if(repo)$
+                  <div class="col-sm-auto" ><a href="$repo$" >original source</a></div>
+$endif$
+$if(comments)$
+                  <div class="col-sm-auto" ><a href="$comments$" >comments</a></div>
+$endif$
+              </div>
+          </div>
+      </main>
+      <footer class="footer pt-2 pb-2">
+          <div class="container">
+              <div class="row" >
+                  <div class="col text-center">
+                      <small class="text-muted">
+                          Made with
+                          <a href="https://github.com/jgm/pandoc">pandoc</a>
+                          and
+                          <a href="https://github.com/schell/milkshake">milkshake</a>
+                      </small>
+                  </div>
+              </div>
+          </div>
+      </footer>
+  </body>
+</html>

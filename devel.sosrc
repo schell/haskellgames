@@ -1,0 +1,33 @@
+# this is a config file for steeloverseer (https://github.com/schell/steeloverseer)
+
+- pattern: .stack-work/install/.*/bin/haskell-games
+  excludes:
+  - \#
+  - flycheck
+  commands:
+  - stack exec haskell-games -- build sitemap.yaml
+  - warp -d build/site
+
+- pattern: templates/.*\.html
+  excludes:
+  - \#
+  - flycheck
+  commands:
+  - stack exec haskell-games -- build sitemap.yaml
+  - warp -d build/site
+
+- pattern: sitemap\.yaml
+  excludes:
+  - \#
+  - flycheck
+  commands:
+  - stack exec haskell-games -- build sitemap.yaml
+  - warp -d build/site
+
+- pattern: ^site/.*
+  excludes:
+  - \#
+  - flycheck
+  commands:
+  - stack exec haskell-games -- build sitemap.yaml
+  - warp -d build/site

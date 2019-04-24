@@ -1,0 +1,24 @@
+dirName: build
+dirSubdirs:
+# GAMES
+- dirName: site/games
+  dirSubdirs:
+  - dirName: snake
+    dirFiles:
+    - pageMeta:
+        theme: templates/default.html
+      pageName: index.html
+      pageDerivation:
+      #- wget https://raw.githubusercontent.com/schell/haskell-games-snake/master/src/Main.lhs
+      - cp ../haskell-games-snake/src/Main.lhs ./
+      - mv Main.lhs build/site/games/snake/
+      pageSourcePath:
+        localPath: build/site/games/snake/Main.lhs
+
+# Copy the things from site, pandoc'ing md into html
+- dirCopiedFrom: site
+  dirOpMap:
+  - operationExtFrom: md
+    operationExtTo: html
+    operationPageOp: PageOpPandoc
+  dirExcludes: [.DS_Store]
