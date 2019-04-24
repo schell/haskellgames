@@ -4,11 +4,9 @@
 prebuild () {
   apt-get update -y
   apt-get install -y wget libtinfo-dev git
-  cd $PROJECT_DIR
   wget -qO- https://get.haskellstack.org/ | sh
   export STACK_ROOT=`pwd`/.stack
   stack setup
-  cd $DIR
 }
 
 
