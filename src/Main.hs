@@ -47,7 +47,6 @@ instance FromJSON Config
 runS3 :: Config -> AWST' Env (ResourceT IO) b -> IO b
 runS3 config f = do
   let creds = unAWSCredentials $ configCreds config
-  -- get the region string out of the environment
   env <-
     liftIO
     $ newEnv creds
