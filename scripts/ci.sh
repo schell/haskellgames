@@ -30,8 +30,6 @@ build () {
 
 deploy () {
   apt-get update -y
-  echo "Unpacking the haskell-games binary..."
-  tar -xvf exe.tar.gz
 
   echo "Deploying $1..."
 
@@ -40,6 +38,8 @@ deploy () {
       echo "This branch is not authorized to deploy!"
       exit 1
   fi
+
+  tar -xvfz build.tar.gz
 
   echo "${!cfg_var}" > cfg.yml
   stack exec haskell-games -- deploy cfg.yml
