@@ -8,6 +8,7 @@ build:
   stage: build
   script:
   - source scripts/ci.sh
+  - prebuild
   - build
   artifacts:
     paths:
