@@ -16,7 +16,6 @@ prebuild () {
 build () {
   stack install --only-dependencies
   stack build || exit 1
-  stack test || exit 1
   stack install
 
   export BIN=`stack path --local-bin`
