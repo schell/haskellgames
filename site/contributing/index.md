@@ -35,7 +35,6 @@ would be a lot of fun to implement. Choose one! Add some!
 | game         | who              | status      | topics        |
 |--------------|------------------|-------------|---------------|
 | pong         | [schell][schell] | in progress | frp           |
-| snake        | [schell][schell] | done        | mtl, nonempty |
 | billiards    | [kynan][kynan]   | reserved    | physics       |
 | asteroids    |                  |             |               |
 | pac-man      |                  |             |               |

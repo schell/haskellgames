@@ -8,6 +8,12 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
 hr {
     border-top: 1px dashed #eee;
 }
+.odd {
+    background-color: #fbeeee;
+}
+td {
+    padding: 0.25em;
+}
 
 /* syntax highlighting */
 code {
