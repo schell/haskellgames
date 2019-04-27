@@ -9,9 +9,10 @@ dirSubdirs:
     - pageMeta:
         theme: templates/default.html
       pageName: index.html
+        # this is a shell script to get your article's source in
+        # the correct spot in the filesystem
       pageDerivation:
-      - wget https://raw.githubusercontent.com/schell/haskell-games-snake/master/src/Main.lhs
-      - mv Main.lhs build/site/games/snake/
+      - cp games/snake/src/Main.lhs build/site/games/snake/Main.lhs
       pageSourcePath:
         localPath: build/site/games/snake/Main.lhs
 

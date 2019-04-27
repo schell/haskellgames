@@ -2,7 +2,7 @@ resolver: lts-13.18
 
 packages:
 - haskellgames.com
-- snake
+- games/snake
 
 extra-deps:
 - git: https://github.com/schell/milkshake.git

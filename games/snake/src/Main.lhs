@@ -4,8 +4,8 @@ articleTitle: Snakes on a Monad &#x2708;&#xFE0F;️
 toc-title: Table of Contents
 author: Schell Scivally
 authorLink: https://github.com/schell
-repo: https://github.com/schell/haskell-games-snake
-comments: https://github.com/schell/haskell-games-snake/issues
+repo: https://github.com/schell/haskellgames/tree/master/snake
+comments: https://github.com/schell/haskellgames/labels/snake
 ---
 
 Welcome to my version of snake. Snake was originally implemented by the San
