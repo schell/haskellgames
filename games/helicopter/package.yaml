@@ -1,0 +1,23 @@
+name: haskell-games-helicopter
+version: 0.1.0.0
+license: BSD3
+
+executables:
+  haskell-games-helicopter:
+    dependencies:
+      - base >= 4.7 && < 5
+      - reactive-banana
+      - sdl2 >= 2.4.1.0
+
+    ghc-options:
+      - -Wall
+      - -Wcompat
+      - -Widentities
+      - -Wincomplete-record-updates
+      - -Wincomplete-uni-patterns
+      - -Wnoncanonical-monad-instances
+      - -Wnoncanonical-monadfail-instances
+      - -Wredundant-constraints
+
+    main:
+      Main.hs
