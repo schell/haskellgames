@@ -3,7 +3,7 @@
 # get ready to build the project
 prebuild () {
   apt-get update -y
-  apt-get install -y wget libtinfo-dev git
+  apt-get install -y wget libtinfo-dev libsdl2-dev
   wget -qO- https://get.haskellstack.org/ | sh
   export STACK_ROOT=`pwd`/.stack
   stack setup
