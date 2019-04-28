@@ -8,12 +8,16 @@ import Control.Concurrent
 import Control.Exception (Exception, handle, throwIO)
 import Control.Monad (forever, void)
 import Data.Foldable (for_)
+import Data.Function ((&))
+import Data.Sequence (Seq, (|>))
 import Data.Word (Word8)
 import Foreign.C.Types (CInt)
 import Reactive.Banana
 import Reactive.Banana.Frameworks
 import SDL (Point(..), Rectangle(..), V2(..), V4(..), ($=))
+import System.Random
 
+import qualified Data.Sequence as Seq
 import qualified SDL
 
 
@@ -43,10 +47,10 @@ main = do
       thrusts :: Event () <-
         fromAddHandler thrustAddHandler
 
-      (scene, done) :: (Behavior Y, Event ()) <-
+      (scene, done) :: (Behavior Scene, Event ()) <-
         helicopterGame ticks thrusts
 
-      scenes :: Event (Future Y) <-
+      scenes :: Event (Future Scene) <-
         changes scene
 
       reactimate (void . tryPutMVar doneVar <$> done)
@@ -114,57 +118,105 @@ data Bye
 helicopterGame ::
      Event ()
   -> Event ()
-  -> MomentIO (Behavior Y, Event ())
+  -> MomentIO (Behavior Scene, Event ())
 helicopterGame ticks thrusts = mdo
-  position :: Behavior Double <-
+  position :: Behavior Y <-
     makePosition ticks velocity
 
-  velocity :: Behavior Double <-
+  velocity :: Behavior VelY <-
     makeVelocity ticks acceleration
 
-  acceleration :: Behavior Double <-
+  acceleration :: Behavior AccY <-
     makeAcceleration thrusts
+
+  obstacles :: Behavior (Seq (X, Y)) <-
+    makeObstacles ticks
 
   let
     dead :: Event ()
     dead =
-      makeDead ticks position
+      makeDead ticks position obstacles
 
-  pure (position, dead)
+  let
+    scene :: Behavior Scene
+    scene =
+      (,) <$> position <*> obstacles
+
+  pure (scene, dead)
 
 makeAcceleration ::
      MonadMoment m
   => Event ()
-  -> m (Behavior Acceleration)
+  -> m (Behavior AccY)
 makeAcceleration thrusts =
   accumB
     (-gAcceleration)
     (negate <$ thrusts)
 
-makeDead :: Event () -> Behavior Y -> Event ()
-makeDead ticks position =
-  whenE
-    ((\p -> p < gFloorY || p > gCeilingY) <$> position)
-    ticks
+makeDead ::
+     Event ()
+  -> Behavior Y
+  -> Behavior (Seq (X, Y))
+  -> Event ()
+makeDead ticks position obstacles =
+  whenE (isDead <$> position <*> obstacles) ticks
+
+  where
+    isDead :: Y -> Seq (X, Y) -> Bool
+    isDead hy obs =
+      or
+        [ hy < gFloorY + 5
+        , hy > gCeilingY - 5
+        , obs
+            & Seq.dropWhileL (\(x, _) -> x < gHelicopterX - 6)
+            & Seq.takeWhileL (\(x, _) -> x <= gHelicopterX + 6)
+            & any (\(_, y) -> y >= hy - 6 && y <= hy + 6)
+        ]
+
+makeObstacles ::
+     Event ()
+  -> MomentIO (Behavior (Seq (X, Y)))
+makeObstacles ticks = mdo
+  elapseds :: Event Int <-
+    accumE 0 ((+1) <$ ticks)
+
+  (ys, _) <-
+    mapAccum
+      (mkStdGen 0)
+      (randomR (gFloorY + 5, gCeilingY - 5) <$
+        filterE (\n -> n `rem` gObstacleSpawnRate == 0) elapseds)
+
+  accumB
+    Seq.empty
+    (unions
+      [ stepObstacles <$ ticks
+      , (\y acc -> acc |> (gObstacleX, y)) <$> ys
+      ])
+
+  where
+    stepObstacles :: Seq (X, Y) -> Seq (X, Y)
+    stepObstacles =
+      fmap (\(x, y) -> (x + gObstacleVelocity, y)) .
+      Seq.dropWhileL (\(x, _) -> x < 0)
 
 makePosition ::
      MonadMoment m
   => Event ()
-  -> Behavior Velocity
+  -> Behavior VelY
   -> m (Behavior Y)
 makePosition ticks velocity =
   accumB
-    gInitialPosition
+    gHelicopterPosition
     ((+) <$> velocity <@ ticks)
 
 makeVelocity ::
      MonadMoment m
   => Event ()
-  -> Behavior Acceleration
-  -> m (Behavior Velocity)
+  -> Behavior AccY
+  -> m (Behavior VelY)
 makeVelocity ticks acceleration =
   accumB
-    gInitialVelocity
+    gHelicopterVelocity
     ((+) <$> acceleration <@ ticks)
 
 
@@ -174,13 +226,14 @@ makeVelocity ticks acceleration =
 
 render ::
      SDL.Renderer
-  -> Y
+  -> Scene
   -> IO ()
-render renderer helicopter = do
+render renderer (helicopter, obstacles) = do
   renderBackground
   renderCeiling
   renderFloor
   renderHelicopter
+  renderObstacles
   SDL.present renderer
 
   where
@@ -202,7 +255,13 @@ render renderer helicopter = do
     renderHelicopter :: IO ()
     renderHelicopter = do
       color gHelicopterColor
-      rect (round (gHelicopterX-5)) (gWindowHeight - round (helicopter-5)) 10 10
+      rect (round gHelicopterX - 5) (gWindowHeight - round helicopter - 5) 10 10
+
+    renderObstacles :: IO ()
+    renderObstacles = do
+      color gObstacleColor
+      for_ obstacles $ \(x, y) ->
+        rect (round x - 5) (gWindowHeight - round y - 5) 10 10
 
     color :: V4 Word8 -> IO ()
     color =
@@ -217,13 +276,20 @@ render renderer helicopter = do
 -- Types and type aliases
 --------------------------------------------------------------------------------
 
-type Acceleration
+type AccY
   = Double
+
+-- | Helicopter, obstacles.
+type Scene
+  = (Y, Seq (X, Y))
 
 type Score
   = Double
 
-type Velocity
+type VelX
+  = Double
+
+type VelY
   = Double
 
 -- | In game coordinates, where (0, 0) is at the bottom left corner.
@@ -239,7 +305,7 @@ type Y
 -- Globals/settings
 --------------------------------------------------------------------------------
 
-gAcceleration :: Acceleration
+gAcceleration :: AccY
 gAcceleration =
   0.25
 
@@ -249,7 +315,7 @@ gBackgroundColor =
 
 gCeilingColor :: V4 Word8
 gCeilingColor =
-  V4 0 255 0 0
+  V4 0 220 0 0
 
 gCeilingY :: Y
 gCeilingY =
@@ -267,13 +333,33 @@ gHelicopterX :: X
 gHelicopterX =
   100
 
-gInitialPosition :: Y
-gInitialPosition =
+gHelicopterPosition :: Y
+gHelicopterPosition =
   300
 
-gInitialVelocity :: Velocity
-gInitialVelocity =
+-- | Initial helicopter velocity.
+gHelicopterVelocity :: VelY
+gHelicopterVelocity =
   0
+
+gObstacleColor :: V4 Word8
+gObstacleColor =
+  V4 180 180 180 0
+
+-- | The number of frames between obstacles spawning.
+gObstacleSpawnRate :: Int
+gObstacleSpawnRate =
+  4
+
+-- | Obstacle velocity.
+gObstacleVelocity :: VelX
+gObstacleVelocity =
+  -4
+
+-- | X coordinate where obstacles spawn.
+gObstacleX :: X
+gObstacleX =
+  800
 
 gWindowHeight :: CInt
 gWindowHeight =

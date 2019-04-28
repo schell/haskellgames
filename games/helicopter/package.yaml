@@ -5,9 +5,11 @@ license: BSD3
 executables:
   haskell-games-helicopter:
     dependencies:
-      - base >= 4.7 && < 5
+      - base
+      - containers
+      - random
       - reactive-banana
-      - sdl2 >= 2.4.1.0
+      - sdl2
 
     ghc-options:
       - -Wall
