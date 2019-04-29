@@ -2,6 +2,7 @@ resolver: lts-13.18
 
 packages:
 - haskellgames.com
+- games/helicopter
 - games/snake
 
 extra-deps:
@@ -9,3 +10,4 @@ extra-deps:
   commit: d030301353b37cd1ee513dfdb2a29ce2c9edb301
 - git: https://github.com/schell/audaxian-toolbox.git
   commit: e0ecd323229f3803a348cfae5e6530dbb7944f72
+- reactive-banana-1.2.1.0
