@@ -6,6 +6,6 @@ packages:
 
 extra-deps:
 - git: https://github.com/schell/milkshake.git
-  commit: ddc7332ac68683a1f9bfbd04516128f8d6a5f7e9
+  commit: d030301353b37cd1ee513dfdb2a29ce2c9edb301
 - git: https://github.com/schell/audaxian-toolbox.git
   commit: e0ecd323229f3803a348cfae5e6530dbb7944f72
