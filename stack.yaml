@@ -7,7 +7,7 @@ packages:
 
 extra-deps:
 - git: https://github.com/schell/milkshake.git
-  commit: d030301353b37cd1ee513dfdb2a29ce2c9edb301
+  commit: 5dc89f5043b5f7f5f5b3faee72fb1679e6cf3236
 - git: https://github.com/schell/audaxian-toolbox.git
   commit: e0ecd323229f3803a348cfae5e6530dbb7944f72
 - reactive-banana-1.2.1.0

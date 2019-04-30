@@ -1,5 +1,15 @@
 #! /bin/bash
 
+installSDL2 () {
+    wget https://www.libsdl.org/release/SDL2-2.0.9.tar.gz
+    tar xz SDL2-2.0.9.tar.gz
+    cd SDL2-2.0.9
+    ./configure
+    make
+    sudo make install
+}
+
+
 # get ready to build the project
 prebuild () {
   apt-get update -y
@@ -7,6 +17,7 @@ prebuild () {
   wget -qO- https://get.haskellstack.org/ | sh
   export STACK_ROOT=`pwd`/.stack
   stack setup
+  installSDL2
 }
 
 
